@@ -4,13 +4,22 @@ class Dynamic<T>(capacity: Int){
 
     private var capacity = capacity //size of the array
     private var elements = 0 //values inside the array
-    private var array: Array<T?> = arrayOfNulls<Any>(capacity) as Array<T?>
+    private var array: Array<T?> = arrayOfNulls<Any>(this.capacity) as Array<T?>
 
-    public fun add(value: T?) { //update capacities and elements
-        for (i in 0 until array.size) {
-            if (array[i] == null) {
-                array[i] = value
-                break
+    public fun add(value: T?) {
+        when {
+            array.contains(null) -> array[array.indexOf(null)] = value
+            array[array.size - 1] != null -> {
+                capacity += 1
+                var newArr: Array<T?> = arrayOfNulls<Any>(capacity) as Array<T?>
+                for (i in 0 until newArr.size) {
+                    if (i + 1 == newArr.size) {
+                        newArr[i] = value
+                        break
+                    }
+                    newArr[i] = array[i]
+                }
+                array = newArr
             }
         }
     }
@@ -18,18 +27,18 @@ class Dynamic<T>(capacity: Int){
     public fun addAll(vararg values: T?) {
         var count = 0
         when {
-            values.size >= array.size -> {
-                array = arrayOfNulls<Any>(array.size + (values.size - array.size)) as Array<T?>
-                capacity = array.size + (values.size - array.size)
-                for (i in array.indexOf(null) until array.size) {
+            values.size >= capacity -> {
+                array = arrayOfNulls<Any>(capacity + (values.size - capacity)) as Array<T?>
+                capacity = capacity + (values.size - capacity)
+                for (i in array.indexOf(null) until capacity) {
                     array[i] = values[count]
                     count++
                 }
             }
-            elements + values.size >= array.size -> {
-                array = arrayOfNulls<Any>(array.size + (elements + values.size - array.size)) as Array<T?>
-                capacity = array.size + (elements + values.size - array.size)
-                for (i in array.indexOf(null) until array.size) {
+            elements + values.size >= capacity -> {
+                array = arrayOfNulls<Any>(capacity + (elements + values.size - capacity)) as Array<T?>
+                capacity = capacity + (elements + values.size - capacity)
+                for (i in array.indexOf(null) until capacity) {
                     array[i] = values[count]
                     count++
                 }
@@ -58,23 +67,26 @@ class Dynamic<T>(capacity: Int){
     }
 
     public fun elements() : Int {
-        for (i in 0 until array.size) {
+        for (i in 0 until capacity) {
             when {
                 array[i] == null -> return i
-                i + 1 == array.size -> return i+1
+                i + 1 == capacity -> return i+1
             }
         }
         return -1
     }
 
-    public fun capacity() : Int = capacity
+    public fun capacity() : Int = this.capacity
 
     public fun get(value: Int) : T? = array[value]
 
     public fun setIndex(index: Int, value: T?) {array[index] = value}
 
-    public fun remove() {
-
+    public fun remove(index: Int) {
+        for (i in index until capacity - 1) {
+            array[i] = array[i + 1]
+        }
+        --capacity
     }
 
 }
