@@ -115,7 +115,26 @@ class Dynamic<T : Any?>(initialCapacity: Int) {
 
     fun get(value: Int) : Any? = array[value]
 
+    fun showContents() : String {
+        val builder = StringBuilder("[")
+        for (i in 0 until capacity) {
+            if (i == capacity - 1) {
+                builder.append("${array[i]}]")
+                break
+            }
+            builder.append("${array[i]}, ")
+        }
+        return builder.toString()
+    }
+
     fun setIndex(index: Int, value: T?) {array[index] = value}
+
+    fun exchangeAll(firstIndex: Int, lastIndex: Int, vararg value: Any?) {
+        require(value.size == lastIndex - firstIndex + 1) {"The size of the arguments should be equal to the provided indexes"}
+        for (i in firstIndex..lastIndex) {
+            array[i] = value[i - firstIndex]
+        }
+    }
 
     fun removeAt(index: Int) {
         for (i in index until capacity - 1) {
