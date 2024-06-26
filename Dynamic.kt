@@ -1,4 +1,4 @@
-@Suppress("UNCHECKED_CAST")
+//@Suppress("UNCHECKED_CAST")
 
 class Dynamic<T : Any?>(initialCapacity: Int) {
 
@@ -116,6 +116,9 @@ class Dynamic<T : Any?>(initialCapacity: Int) {
     fun get(value: Int) : Any? = array[value]
 
     fun showContents() : String {
+        if (capacity == 0) {
+            return "[]"
+        }
         val builder = StringBuilder("[")
         for (i in 0 until capacity) {
             if (i == capacity - 1) {
@@ -154,7 +157,7 @@ class Dynamic<T : Any?>(initialCapacity: Int) {
 
     fun removeRange(firstIndex: Int, lastIndex: Int) {
         val newArr: Array<Any?> = arrayOfNulls<Any?>(capacity)
-        for (i in 0 until newArr.size) {
+        for (i in newArr.indices) {
             if (i in firstIndex..lastIndex) {
                 continue
             }
