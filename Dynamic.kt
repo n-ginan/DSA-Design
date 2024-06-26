@@ -4,7 +4,7 @@ class Dynamic<T : Any?>(initialCapacity: Int) {
 
     private var capacity = initialCapacity //size of the array
     private var elements = 0 //values inside the array
-    private var array: Array<Any?> = arrayOfNulls<Any?>(this.capacity)
+    private var array: Array<Any?> = arrayOfNulls<Any?>(capacity)
 
     fun add(value: T?) {
         when {
@@ -143,11 +143,26 @@ class Dynamic<T : Any?>(initialCapacity: Int) {
         --capacity
     }
 
-//    fun removeAll(value: Any) {
-//        while(array.contains(value)) {
-//
-//        }
-//    } TODO: Implement this shit lazy ass
+    fun removeAll(value: Any) {
+        val arr: Array<Any?> = array.filter{it != value}.toTypedArray()
+        capacity = arr.size
+        array = arrayOfNulls<Any?>(capacity)
+        for (i in arr.indices) {
+            array[i] = arr[i]
+        }
+    }
+
+    fun removeRange(firstIndex: Int, lastIndex: Int) {
+        val newArr: Array<Any?> = arrayOfNulls<Any?>(capacity)
+        for (i in 0 until newArr.size) {
+            if (i in firstIndex..lastIndex) {
+                continue
+            }
+            newArr[i] = array[i]
+        }
+        capacity = newArr.size - newArr.filter{it == null}.toTypedArray().size
+        array = newArr.filterNotNull().toTypedArray()
+    }
 
     fun clear() { array = arrayOfNulls<Any?>(this.capacity) }
 
