@@ -1,18 +1,18 @@
 @Suppress("UNCHECKED_CAST")
 
-class Dynamic<T>(capacity: Int){
+class Dynamic<T : Any?>(initialCapacity: Int) {
 
-    private var capacity = capacity //size of the array
+    private var capacity = initialCapacity //size of the array
     private var elements = 0 //values inside the array
-    private var array: Array<T?> = arrayOfNulls<Any>(this.capacity) as Array<T?>
+    private var array: Array<Any?> = arrayOfNulls<Any?>(this.capacity)
 
-    public fun add(value: T?) {
+    fun add(value: T?) {
         when {
             array.contains(null) -> array[array.indexOf(null)] = value
-            array[array.size - 1] != null -> {
+            array[capacity - 1] != null -> {
                 capacity += 1
-                var newArr: Array<T?> = arrayOfNulls<Any>(capacity) as Array<T?>
-                for (i in 0 until newArr.size) {
+                val newArr: Array<Any?> = arrayOfNulls<Any?>(capacity)
+                for (i in newArr.indices) {
                     if (i + 1 == newArr.size) {
                         newArr[i] = value
                         break
@@ -23,21 +23,23 @@ class Dynamic<T>(capacity: Int){
             }
         }
     }
-    
-    public fun addAll(vararg values: T?) {
+
+    fun add(index: Int, value: T?) { array[index] = value }
+
+    fun addAll(vararg values: T?) {
         var count = 0
         when {
             values.size >= capacity -> {
-                array = arrayOfNulls<Any>(capacity + (values.size - capacity)) as Array<T?>
-                capacity = capacity + (values.size - capacity)
+                array = arrayOfNulls<Any?>(capacity + (values.size - capacity))
+                capacity += (values.size - capacity)
                 for (i in array.indexOf(null) until capacity) {
                     array[i] = values[count]
                     count++
                 }
             }
             elements + values.size >= capacity -> {
-                array = arrayOfNulls<Any>(capacity + (elements + values.size - capacity)) as Array<T?>
-                capacity = capacity + (elements + values.size - capacity)
+                array = arrayOfNulls<Any?>(capacity + (elements + values.size - capacity))
+                capacity += (elements + values.size - capacity)
                 for (i in array.indexOf(null) until capacity) {
                     array[i] = values[count]
                     count++
@@ -45,10 +47,9 @@ class Dynamic<T>(capacity: Int){
             }
         }
     }
-    
-    public fun insertAt(index: Int, value: T?) : Unit { array[index] = value }
-    
-    public fun contains(value: T?) : Boolean {
+
+
+    fun contains(value: T?) : Boolean {
         for (it in array) {
             if (it == value) {
                 return true
@@ -56,8 +57,42 @@ class Dynamic<T>(capacity: Int){
         }
         return false
     }
+
+    fun containsAll(col: Collection<T>) : Boolean {
+
+        val arrMap = mutableMapOf<Any?, Int>()
+        val colMap = mutableMapOf<Any?, Int>()
+
+        for (it in array) {
+            arrMap[it] = arrMap.getOrDefault(it, 0) + 1
+        }
+
+        for (it in col) {
+            colMap[it] = colMap.getOrDefault(it, 0) + 1
+        }
+
+        return arrMap == colMap
+    }
+
+    fun indexOf(value: Any) : Any {
+        for (i in array.indices) {
+            if (array[i] == value) return i
+        }
+        return when(value) {
+            is String -> ""
+            is Number -> -1
+            else -> ""
+        }
+    }
+
+    fun lastIndexOf(value: Any) : Int {
+        for (i in capacity - 1 downTo 0) {
+            if (array[i] == value) return i
+        }
+        return -1
+    }
     
-    public fun isEmpty() : Boolean {
+    fun isEmpty() : Boolean {
         for (it in array) {
             if (it != null) {
                 return false
@@ -66,7 +101,7 @@ class Dynamic<T>(capacity: Int){
         return true
     }
 
-    public fun elements() : Int {
+    fun elements() : Int {
         for (i in 0 until capacity) {
             when {
                 array[i] == null -> return i
@@ -76,17 +111,25 @@ class Dynamic<T>(capacity: Int){
         return -1
     }
 
-    public fun capacity() : Int = this.capacity
+    fun capacity() : Int = this.capacity
 
-    public fun get(value: Int) : T? = array[value]
+    fun get(value: Int) : Any? = array[value]
 
-    public fun setIndex(index: Int, value: T?) {array[index] = value}
+    fun setIndex(index: Int, value: T?) {array[index] = value}
 
-    public fun remove(index: Int) {
+    fun removeAt(index: Int) {
         for (i in index until capacity - 1) {
             array[i] = array[i + 1]
         }
         --capacity
     }
+
+//    fun removeAll(value: Any) {
+//        while(array.contains(value)) {
+//
+//        }
+//    } TODO: Implement this shit lazy ass
+
+    fun clear() { array = arrayOfNulls<Any?>(this.capacity) }
 
 }
