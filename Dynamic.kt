@@ -8,7 +8,7 @@ class Dynamic<T>(initialCapacity: Int) : Iterable<Any?> {
 
     override fun iterator(): Iterator<Any?> = array.iterator()
 
-    fun add(value: T?) {
+    fun add(value: Any?) {
         when {
             array.contains(null) -> array[array.indexOf(null)] = value
             array[capacity - 1] != null -> {
@@ -28,7 +28,7 @@ class Dynamic<T>(initialCapacity: Int) : Iterable<Any?> {
 
     fun add(index: Int, value: T?) { array[index] = value }
 
-    fun addAll(vararg values: T?) {
+    fun addAll(vararg values: Any?) {
         var count = 0
         when {
             values.size >= capacity -> {
@@ -76,11 +76,11 @@ class Dynamic<T>(initialCapacity: Int) : Iterable<Any?> {
         return arrMap == colMap
     }
 
-    inline fun <T : Any?> display(arr: Dynamic<T>, action: (Any?) -> Unit) {
-        for (i in 0 until arr.capacity()) {
-            action(arr.get(i))
-        }
-    }
+//    inline fun <T : Any?> display(arr: Dynamic<T>, action: (Any?) -> Unit) {
+//        for (i in 0 until arr.capacity()) {
+//            action(arr.get(i))
+//        }
+//    }
 
     inline fun <T : Any?> displayOnly(arr: Dynamic<T>, value: Any?, predicate: (Any?) -> Unit) {
         for (i in 0 until arr.capacity()) {
@@ -89,7 +89,7 @@ class Dynamic<T>(initialCapacity: Int) : Iterable<Any?> {
             }
         }
     }
-    
+
 
     fun indexOf(value: Any) : Any {
         for (i in array.indices) {
@@ -156,10 +156,66 @@ class Dynamic<T>(initialCapacity: Int) : Iterable<Any?> {
         }
     }
 
+    fun referenceToValue() {
+
+        val numberList = mutableListOf<Any?>()
+        val stringList = mutableListOf<String>()
+        var count = 0
+
+        for (i in 0 until capacity) {
+            when(array[i]) {
+                is String -> stringList.add(array[i].toString())
+                is Number, is Char, is Boolean -> numberList.add(array[i])
+            }
+        }
+
+        for (string in stringList) {
+            array[count] = string
+            count++
+        }
+
+        count = 0
+
+        for (number in numberList) {
+            array[stringList.size + count] = number
+            count++
+        }
+
+    }
+
+    fun valueToReference() {
+
+        val numberList = mutableListOf<Any?>()
+        val stringList = mutableListOf<String>()
+        var count = 0
+
+        for (i in 0 until capacity) {
+            when(array[i]) {
+                is String -> stringList.add(array[i].toString())
+                is Number, is Char, is Boolean -> numberList.add(array[i])
+            }
+        }
+
+        for (number in numberList) {
+            array[count] = number
+            count++
+        }
+
+        count = 0
+
+        for (string in stringList) {
+            array[count + numberList.size] = string
+            count++
+        }
+
+    }
+
     fun removeAt(index: Int) {
+
         for (i in index until capacity - 1) {
             array[i] = array[i + 1]
         }
+
         --capacity
     }
 
