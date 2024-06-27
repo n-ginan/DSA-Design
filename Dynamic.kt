@@ -1,10 +1,12 @@
-//@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST")
 
-class Dynamic<T : Any?>(initialCapacity: Int) {
+class Dynamic<T>(initialCapacity: Int) : Iterable<Any?> {
 
     private var capacity = initialCapacity //size of the array
     private var elements = 0 //values inside the array
     private var array: Array<Any?> = arrayOfNulls<Any?>(capacity)
+
+    override fun iterator(): Iterator<Any?> = array.iterator()
 
     fun add(value: T?) {
         when {
@@ -73,6 +75,21 @@ class Dynamic<T : Any?>(initialCapacity: Int) {
 
         return arrMap == colMap
     }
+
+    inline fun <T : Any?> display(arr: Dynamic<T>, action: (Any?) -> Unit) {
+        for (i in 0 until arr.capacity()) {
+            action(arr.get(i))
+        }
+    }
+
+    inline fun <T : Any?> displayOnly(arr: Dynamic<T>, value: Any?, predicate: (Any?) -> Unit) {
+        for (i in 0 until arr.capacity()) {
+            if (arr.get(i) == value) {
+                predicate(value)
+            }
+        }
+    }
+    
 
     fun indexOf(value: Any) : Any {
         for (i in array.indices) {
