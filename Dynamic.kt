@@ -1,19 +1,18 @@
 @Suppress("UNCHECKED_CAST")
 
-class Dynamic<T>(initialCapacity: Int) : Iterable<Any?> {
+data class Dynamic<T>(var initialCapacity: Int) : Iterable<Any?> {
 
-    private var capacity = initialCapacity //size of the array
     private var elements = 0 //values inside the array
-    private var array: Array<Any?> = arrayOfNulls<Any?>(capacity)
+    private var array: Array<Any?> = arrayOfNulls<Any?>(initialCapacity)
 
     override fun iterator(): Iterator<Any?> = array.iterator()
 
     fun add(value: Any?) {
         when {
             array.contains(null) -> array[array.indexOf(null)] = value
-            array[capacity - 1] != null -> {
-                capacity += 1
-                val newArr: Array<Any?> = arrayOfNulls<Any?>(capacity)
+            array[initialCapacity - 1] != null -> {
+                initialCapacity += 1
+                val newArr: Array<Any?> = arrayOfNulls<Any?>(initialCapacity)
                 for (i in newArr.indices) {
                     if (i + 1 == newArr.size) {
                         newArr[i] = value
@@ -31,18 +30,18 @@ class Dynamic<T>(initialCapacity: Int) : Iterable<Any?> {
     fun addAll(vararg values: Any?) {
         var count = 0
         when {
-            values.size >= capacity -> {
-                array = arrayOfNulls<Any?>(capacity + (values.size - capacity))
-                capacity += (values.size - capacity)
-                for (i in array.indexOf(null) until capacity) {
+            values.size >= initialCapacity -> {
+                array = arrayOfNulls<Any?>(initialCapacity + (values.size - initialCapacity))
+                initialCapacity += (values.size - initialCapacity)
+                for (i in array.indexOf(null) until initialCapacity) {
                     array[i] = values[count]
                     count++
                 }
             }
-            elements + values.size >= capacity -> {
-                array = arrayOfNulls<Any?>(capacity + (elements + values.size - capacity))
-                capacity += (elements + values.size - capacity)
-                for (i in array.indexOf(null) until capacity) {
+            elements + values.size >= initialCapacity -> {
+                array = arrayOfNulls<Any?>(initialCapacity + (elements + values.size - initialCapacity))
+                initialCapacity += (elements + values.size - initialCapacity)
+                for (i in array.indexOf(null) until initialCapacity) {
                     array[i] = values[count]
                     count++
                 }
@@ -77,13 +76,13 @@ class Dynamic<T>(initialCapacity: Int) : Iterable<Any?> {
     }
 
 //    inline fun <T : Any?> display(arr: Dynamic<T>, action: (Any?) -> Unit) {
-//        for (i in 0 until arr.capacity()) {
+//        for (i in 0 until arr.initialCapacity()) {
 //            action(arr.get(i))
 //        }
 //    }
 
     inline fun <T : Any?> displayOnly(arr: Dynamic<T>, value: Any?, predicate: (Any?) -> Unit) {
-        for (i in 0 until arr.capacity()) {
+        for (i in 0 until arr.initialCapacity()) {
             if (arr.get(i) == value) {
                 predicate(value)
             }
@@ -103,7 +102,7 @@ class Dynamic<T>(initialCapacity: Int) : Iterable<Any?> {
     }
 
     fun lastIndexOf(value: Any) : Int {
-        for (i in capacity - 1 downTo 0) {
+        for (i in initialCapacity - 1 downTo 0) {
             if (array[i] == value) return i
         }
         return -1
@@ -119,26 +118,26 @@ class Dynamic<T>(initialCapacity: Int) : Iterable<Any?> {
     }
 
     fun elements() : Int {
-        for (i in 0 until capacity) {
+        for (i in 0 until initialCapacity) {
             when {
                 array[i] == null -> return i
-                i + 1 == capacity -> return i+1
+                i + 1 == initialCapacity -> return i+1
             }
         }
         return -1
     }
 
-    fun capacity() : Int = this.capacity
+    fun initialCapacity() : Int = this.initialCapacity
 
     fun get(value: Int) : Any? = array[value]
 
     fun showContents() : String {
-        if (capacity == 0) {
+        if (initialCapacity == 0) {
             return "[]"
         }
         val builder = StringBuilder("[")
-        for (i in 0 until capacity) {
-            if (i == capacity - 1) {
+        for (i in 0 until initialCapacity) {
+            if (i == initialCapacity - 1) {
                 builder.append("${array[i]}]")
                 break
             }
@@ -162,7 +161,7 @@ class Dynamic<T>(initialCapacity: Int) : Iterable<Any?> {
         val stringList = mutableListOf<String>()
         var count = 0
 
-        for (i in 0 until capacity) {
+        for (i in 0 until initialCapacity) {
             when(array[i]) {
                 is String -> stringList.add(array[i].toString())
                 is Number, is Char, is Boolean -> numberList.add(array[i])
@@ -189,7 +188,7 @@ class Dynamic<T>(initialCapacity: Int) : Iterable<Any?> {
         val stringList = mutableListOf<String>()
         var count = 0
 
-        for (i in 0 until capacity) {
+        for (i in 0 until initialCapacity) {
             when(array[i]) {
                 is String -> stringList.add(array[i].toString())
                 is Number, is Char, is Boolean -> numberList.add(array[i])
@@ -212,34 +211,34 @@ class Dynamic<T>(initialCapacity: Int) : Iterable<Any?> {
 
     fun removeAt(index: Int) {
 
-        for (i in index until capacity - 1) {
+        for (i in index until initialCapacity - 1) {
             array[i] = array[i + 1]
         }
 
-        --capacity
+        --initialCapacity
     }
 
     fun removeAll(value: Any) {
         val arr: Array<Any?> = array.filter{it != value}.toTypedArray()
-        capacity = arr.size
-        array = arrayOfNulls<Any?>(capacity)
+        initialCapacity = arr.size
+        array = arrayOfNulls<Any?>(initialCapacity)
         for (i in arr.indices) {
             array[i] = arr[i]
         }
     }
 
     fun removeRange(firstIndex: Int, lastIndex: Int) {
-        val newArr: Array<Any?> = arrayOfNulls<Any?>(capacity)
+        val newArr: Array<Any?> = arrayOfNulls<Any?>(initialCapacity)
         for (i in newArr.indices) {
             if (i in firstIndex..lastIndex) {
                 continue
             }
             newArr[i] = array[i]
         }
-        capacity = newArr.size - newArr.filter{it == null}.toTypedArray().size
+        initialCapacity = newArr.size - newArr.filter{it == null}.toTypedArray().size
         array = newArr.filterNotNull().toTypedArray()
     }
 
-    fun clear() { array = arrayOfNulls<Any?>(this.capacity) }
+    fun clear() { array = arrayOfNulls<Any?>(this.initialCapacity) }
 
 }
